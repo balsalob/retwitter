@@ -1,21 +1,23 @@
-var express = require("express"),
-    app = express(),
-    bodyParser  = require("body-parser"),
-    methodOverride = require("method-override");
-    mongoose = require('mongoose');
+var express = require("express");
+var app = express();
+var bodyParser  = require("body-parser");
+var mongoose = require('mongoose');
+var userRoutes = require('./routes/user');
+var tweetRoutes = require('./routes/tweet');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(methodOverride());
 
-var router = express.Router();
+app.use('/', userRoutes);
+app.use('/', tweetRoutes);
 
-router.get('/', function(req, res) {
-   res.send("Hola mundo!");
-});
-
-app.use(router);
-
-app.listen(3000, function() {
-  console.log("Servidor corriendo en http://localhost:3000");
+mongoose.connect('mongodb://localhost/twitter', function(err, res) {
+ if(err) {
+   throw err;
+ }else {
+   console.log('Conectado a la base de datos');
+   app.listen(3000, function() {
+     console.log("Servidor corriendo en http://localhost:3000");
+   });
+ }
 });
