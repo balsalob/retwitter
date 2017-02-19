@@ -2,11 +2,17 @@ var express = require("express");
 var app = express();
 var bodyParser  = require("body-parser");
 var mongoose = require('mongoose');
+var session = require("express-session");
 var userRoutes = require('./routes/user');
 var tweetRoutes = require('./routes/tweet');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(session({
+  secret: "apitwitter",
+  resave: false,
+  saveUninitialized: false
+}));
 
 app.use('/', userRoutes);
 app.use('/', tweetRoutes);

@@ -33,6 +33,7 @@ function signIn(req, res) {
         res.status(404).send({message:'El usuario no está registrado'});
       }else{
         if(password == user.password){
+          req.session.user_id = user._id;
           res.status(200).send({user: user});
         }else{
           res.status(500).send({message:'Contraseña incorrecta'});
