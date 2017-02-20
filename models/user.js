@@ -5,7 +5,7 @@ var userSchema = new Schema({
     username: String,
     password: String,
     email: String,
-    favoritos: { type: Schema.ObjectId, ref: "Tweet" }
+    favorites: [{text: String, Autor: String}]
 });
 
 module.exports = mongoose.model('User', userSchema);

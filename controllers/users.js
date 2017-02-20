@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var User  = require('../models/user');
+var Tweet  = require('../models/tweet');
 
 function signUp(req,res) {
 
@@ -45,20 +46,54 @@ function signIn(req, res) {
 }
 
 function addFavorite(req, res) {
-  var userId = req.params.id;
-  var update = reg.body;
+  var id = req.session.user_id;
+  var tweetId = req.params.id;
 
-  User.findByIdAndUpdate(userId, update, function (err, userUpdated) {
+  console.log(tweetId);
+
+  Tweet.findById(tweetId, function(err, tweet) {
     if(err){
-      res.status(500).send({message:'Error al actualizar el usuario'});
+      res.status(500).send({message:'Error al recuperar el tweet'});
     }else{
-      res.status(200).send({user: userUpdated});
+          
+       User.findById(tweet.user, function(err, user) {
+         if(err){
+          res.status(500).send({message:'Error al recuperar el tweet'});
+        }else{
+           var favorite = {$push: {favorites: [{text: tweet.text, Autor: user.username}]}};
+
+            User.findOneAndUpdate({_id: id}, favorite, {new: true, upsert: true}, function(err, userUpdate) {
+
+              if(err){
+                res.status(500).send({message:'Error al guardar favorito'});
+              }else{
+                res.status(200).send({user: userUpdate});
+              }
+
+          });
+
+        }
+      });
+
+      
     }
   });
+    
+
 }
 
 function showFavorite(req, res) {
+  var id = req.session.user_id;
 
+  User.findById(id, function(err, tweets) {
+    if(err){
+      res.status(500).send({message:'Error al recuperar el tweet'});
+    }else{
+
+       res.status(200).send({tweet: tweets.favorites});
+
+    }
+  });
 }
 
 module.exports = {
